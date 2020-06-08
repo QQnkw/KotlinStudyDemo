@@ -1,6 +1,7 @@
 import java.lang.Integer.parseInt
 
 fun main() {
+    println("开始")
 //    test1()
 //    test2()
 //    test3()
@@ -14,13 +15,48 @@ fun main() {
 //    test11()
 //    test12()
 //    test13()
-    //使用标签控制 return 的目标
-//    foo1()
-//    foo2()
-//    foo3()
+//    test14()
+//    test15()
+//    test16()
+
 }
 
-fun foo1() {
+/**
+ * 方法的重写
+ */
+private fun test16() {
+    val ccc = CCC()
+    ccc.a()
+    ccc.b()
+    ccc.f()
+    ccc.c()
+    ccc.c("123")
+    ccc.d(1)
+    ccc.d("456")
+    ccc.e()
+}
+
+/**
+ * 带有便签的返回值
+ */
+private fun test14() {
+    //使用标签控制 return 的目标
+    foo1()
+    foo2()
+    foo3()
+}
+
+/**
+ * 构造器的相关
+ */
+private fun test15() {
+    Dog(4)
+    Cat(2)
+    Man("Tom", 10)
+    SmallWoman("Jarry", 10, "北京", "中国")
+}
+
+private fun foo1() {
     listOf(1, 2, 3, 4, 5).forEach {
         if (it == 3) return // 非局部的返回(non-local return), 直接返回到 foo() 函数的调用者
         println(it)
@@ -28,7 +64,7 @@ fun foo1() {
     println("this point is unreachable")
 }
 
-fun foo2() {
+private fun foo2() {
     listOf(1, 2, 3, 4, 5).forEach {
         if (it == 3) return@forEach // 局部的返回(local return), 返回到 Lambda 表达式的调用者, 也就是, 返回到 forEach 循环
         println(it)
@@ -36,7 +72,7 @@ fun foo2() {
     println(" done with explicit label")
 }
 
-fun foo3() {
+private fun foo3() {
     run loop@{
         listOf(1, 2, 3, 4, 5).forEach {
             if (it == 3) return@loop // 非局部的返回(non-local return), 从传递给 run 函数的 Lambda 表达式中返回
