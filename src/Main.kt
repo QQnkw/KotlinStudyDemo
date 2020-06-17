@@ -77,7 +77,7 @@ private fun test15() {
 
 private fun foo1() {
     listOf(1, 2, 3, 4, 5).forEach {
-        if (it == 3) return // 非局部的返回(non-local return), 直接返回到 foo() 函数的调用者
+        if (it == 3) return // 非局部的返回(non-local return), 直接返回到 foo1() 函数的调用者
         println(it)
     }
     println("this point is unreachable")
@@ -95,10 +95,10 @@ private fun foo3() {
     run loop@{
         listOf(1, 2, 3, 4, 5).forEach {
             if (it == 3) return@loop // 非局部的返回(non-local return), 从传递给 run 函数的 Lambda 表达式中返回
-            print(it)
+            println(it)
         }
     }
-    print(" done with nested loop")
+    println(" done with nested loop")
 }
 
 /**
