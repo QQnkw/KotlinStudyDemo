@@ -40,6 +40,85 @@ class K1 {
     }
 
     /**
+     * 用更符合 Kotlin 语言编程习惯的方式重写这个示例程序,
+     * 用 runBlocking 来包装主函数的运行;
+     *
+     * 这里 runBlocking<Unit> { ... } 起一种适配器的作用, 用来启动最上层的主协程.
+     * 我们明确指定了返回值类型为 Unit,
+     * 因为 Kotlin 语言中, 语法正确的 main 函数必须返回 Unit.
+     */
+    fun bbb() = runBlocking<Unit> { // 启动主协程
+        GlobalScope.launch { // 在后台启动新的协程, 然后继续执行当前程序
+            delay(1000L)
+            println("World!")
+        }
+        println("Hello,") // 主协程在这里立即继续执行
+        delay(2000L)      // 等待 2 秒, 保证 JVM 继续存在
+    }
+
+    /*----------------------------------等待一个任务完成-----------------------------------*/
+    /**
+     * 当其他协程正在工作时, 等待一段固定的时间, 这是一种不太好的方案.
+     * 下面我们(以非阻塞的方式)明确地等待我们启动的后台 Job 执行完毕;
+     */
+    fun bc() = runBlocking {
+        //sampleStart
+        val job = GlobalScope.launch { // 启动新的协程, 并保存它的执行任务的引用
+            delay(1000L)
+            println("World!")
+        }
+        println("Hello,")
+        job.join() // 等待, 直到子协程执行完毕
+        //sampleEnd
+    }
+/*----------------------------------结构化的并发-----------------------------------*/
+    /**
+     * 有一个 bbcc 函数, 它使用 runBlocking 协程构建器变换成了一个协程.
+     * 所有的协程构建器, 包括 runBlocking,
+     * 都会向它的代码段的作用范围添加一个 CoroutineScope 的实例.
+     * 我们在这个作用范围内启动协程,
+     * 而不需要明确地 join 它们,
+     * 因为外层协程 (在我们的示例程序中就是 runBlocking)
+     * 会等待它的作用范围内启动的所有协程全部完成.
+     * 因此, 我们可以把示例程序写得更简单一些:
+     */
+    fun bbcc() = runBlocking { // this: CoroutineScope
+        launch { // 在 runBlocking 的作用范围内启动新的协程
+            delay(1000L)
+            println("World!")
+        }
+        println("Hello,")
+    }
+
+    /*----------------------------------作用范围(Scope)构建器-----------------------------------*/
+    /**
+     * 除了各种构建器提供的协程作用范围之外,
+     * 还可以使用 coroutineScope 构建器来自行声明作用范围.
+     * 这个构建器可以创建新的协程作用范围,
+     * 并等待在这个范围内启动的所有子协程运行结束.
+     * runBlocking 和 coroutineScope 之间的主要区别是,
+     * coroutineScope 在等待子协程运行时, 不会阻塞当前线程.
+     */
+    fun bbbccc() = runBlocking { // this: CoroutineScope
+        launch {
+            delay(200L)
+            println("Task from runBlocking")
+        }
+
+        coroutineScope { // 创建新的协程作用范围
+            launch {
+                delay(500L)
+                println("Task from nested launch")
+            }
+
+            delay(100L)
+            println("Task from coroutine scope") // 在嵌套的 launch 之前, 这一行会打印
+        }
+
+        println("Coroutine scope is over") // 直到嵌套的 launch 运行结束后, 这一行才会打印
+    }
+    /*----------------------------------抽取函数(Extract Function)的重构-----------------------------------*/
+    /**
      * 打印
      * Hello,
      * World!
